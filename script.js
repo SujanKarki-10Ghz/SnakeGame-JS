@@ -1,4 +1,7 @@
 const playBoard = document.querySelector(".playboard");
+const scoreElement = document.querySelector(".score");
+const highScoreElement = document.querySelector(".highScore");
+const controls = document.querySelectorAll(".controls i");
 // Snake food
 
 let gameOver = false;
@@ -11,6 +14,12 @@ let velocityX = 0,
   velocityY = 0;
 
 let setIntervalId;
+let score = 0;
+
+//getting highScore from localstorage
+let high_score = localStorage.getItem("highScore") || 0;
+highScoreElement.innerText = `High Score : ${high_score}`;
+
 //changing food position
 const changeFoodPosition = () => {
   //Passing a random 0-30 value as position
@@ -43,6 +52,12 @@ const changeDirection = (e) => {
     velocityY = 0;
   }
 };
+controls.forEach((key) => {
+  key.addEventListener("click", () => {
+    //calling the change direction on each key click and passing key datset value as an object
+    changeDirection({ key: key.dataset.key });
+  });
+});
 
 const initGame = () => {
   if (gameOver) {
@@ -50,7 +65,6 @@ const initGame = () => {
   }
 
   //creating a food div and inserting it in the playboard element.
-
   let htmlMarkup = `<div class = "food" style = "grid-area:${foodY} / ${foodX}"></div>`;
   //grid-area is shorthand property that sets the values of grid item's start and end lines for both row and column
 
@@ -59,6 +73,13 @@ const initGame = () => {
     changeFoodPosition();
     snakeBody.push([foodX, foodY]); // => pushing food position to snake body array
     // console.log(snakeBody);
+    score++; //=> increment the score by 1 every time snake eats food.
+
+    high_score = score >= high_score ? score : high_score; //set highScore to score value if score is greater than highScore
+    localStorage.setItem("highScore", high_score);
+    scoreElement.innerText = `Score: ${score}`; //update the score to display
+    highScoreElement.innerText = `High Score: ${high_score}`;
+    console.log(high_score);
   }
 
   for (let i = snakeBody.length - 1; i > 0; i--) {
